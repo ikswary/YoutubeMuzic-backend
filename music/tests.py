@@ -14,6 +14,8 @@ from .models          import (
     Hotlist
 )
 
+clnt = Client()
+
 
 class StreamViewTest(TestCase):
     def setUp(self):
@@ -102,10 +104,10 @@ class MainViewTest(TestCase):
                         ).filter(
                             id=i
                         ).annotate(
-                            list_id = F('playlist__id'),
-                            list_name = F('playlist__name'),
-                            list_thumb = F('playlist__thumbnail_id__url'),
-                            list_type = F('playlist__type_id__name'),
+                            list_id     = F('playlist__id'),
+                            list_name   = F('playlist__name'),
+                            list_thumb  = F('playlist__thumbnail_id__url'),
+                            list_type   = F('playlist__type_id__name'),
                             list_artist = F('playlist__artist')
                         ).values(
                             'list_id',
