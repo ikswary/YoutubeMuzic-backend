@@ -66,3 +66,6 @@ class Hotlist(models.Model):
     artist      = models.CharField(max_length=50)
     views       = models.CharField(max_length=10)
 
+    class Meta:
+        db_table = 'hotlists'
+

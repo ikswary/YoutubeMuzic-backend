@@ -6,12 +6,6 @@ from .views import (
 )
 
 urlpatterns = [
-    path(
-        '/<int:media_id>',
-        StreamView.as_view()
-    ),
-    path(
-        '/main',
-        MainView.as_view()
-    ),
+    path('/<int:media_id>',StreamView.as_view()),
+    path('/main',MainView.as_view()),
 ]

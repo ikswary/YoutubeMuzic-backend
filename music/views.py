@@ -59,70 +59,46 @@ class StreamView(View):
         resp['Cache-Control'] = 'no-cache'
         return resp
 
+
 class MainView(View):
+    BASIC_COLLECTION_IDS = [1, 7, 13]
+    VARIABLE_COLLECTIONS = [3 ,4, 8, 10, 12, 15]
 
     def get(self, request):
+        range_list = request.GET.getlist('collection_id')
+        if not range_list:
+            range_list = self.BASIC_COLLECTION_IDS
 
-        range_list = [1,7,13]
-
-        if request.GET :
-            range_list = request.GET.getlist(
-                'collection_id'
-            )
-
-        collection = Collection.objects.prefetch_related(
-            'playlist_set'
-        )
+        collection = Collection.objects.prefetch_related('playlist_set')
 
         payload = {
-                'contents':
-                [
-                    {
-                        'collection':collection.filter(id=i).values('name').first()['name'],
-                        'elements':
-                        list(
-                            collection.filter(id=i).annotate(
-                                list_id     = F('playlist__id'),
-                                list_name   = F('playlist__name'),
-                                list_thumb  = F('playlist__thumbnail_id__url'),
-                                list_type   = F('playlist__type_id__name'),
-                                list_artist = F('playlist__artist')
-                            ).values(
-                                'list_id',
-                                'list_name',
-                                'list_thumb',
-                                'list_type',
-                                'list_artist'
-                            )
-                        )
-                    }
-                    for i in range_list
-                ]
-        }
+                'contents': [{
+                    'collection':collection.filter(id=i).values('name').first()['name'],
+                    'elements': list(
+                        collection.filter(id=i).annotate(
+                            list_id     = F('playlist__id'),
+                            list_name   = F('playlist__name'),
+                            list_thumb  = F('playlist__thumbnail_id__url'),
+                            list_type   = F('playlist__type_id__name'),
+                            list_artist = F('playlist__artist')
+                        ).values(
+                            'list_id',
+                            'list_name',
+                            'list_thumb',
+                            'list_type',
+                            'list_artist'
+                        ))
+                    } for i in range_list ]}
+
+        def get_metadata(payload):
+            payload['main_thumb']= collection.filter(
+                name = payload['contents'][0]['collection']
+            ).values('thumbnail_id__url').first()['thumbnail_id__url']
+
+            payload['range_list']=random.sample(self.VARIABLE_COLLECTIONS, 6)
+            return
 
         if not request.GET :
-            payload[
-                'main_thumb'
-            ]=collection.filter(
-                name = payload[
-                    'contents'
-                ][0][
-                    'collection'
-                ]
-            ).values(
-                'thumbnail_id__url'
-            ).first()[
-                'thumbnail_id__url'
-            ]
-            payload[
-                'range_list'
-            ]=random.sample(
-                [3,4,8,10,12,15],
-                6
-            )
+            get_metadata(payload)
 
-        return JsonResponse(
-            payload,
-            status=200
-        )
-
+        return JsonResponse(payload, status=200)
