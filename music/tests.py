@@ -127,3 +127,62 @@ class MainViewTest(TestCase):
 
         self.assertFalse(for_test())
 
+
+class ListViewTest(TestCase):
+    def setUp(self):
+        thumbnail = Thumbnail.objects.create(url = 'github.com/ensia96')
+
+        artist = Artist.objects.create(
+            name        = '춤추는망고',
+            description = '슈퍼개발자!',
+            thumbnail   = thumbnail
+        )
+        collection = Collection.objects.get(id=13)
+
+        self.playlist = Playlist.objects.create(
+            name        = 'haha',
+            description = 'this is entity for test!',
+            year        = '3030',
+            artist      = '춤추는망고',
+            thumbnail   = thumbnail,
+            type        = Type.objects.get(id=5),
+            collection  = collection
+        )
+        self.media = Media.objects.create(
+            name       = '슈퍼망고의 개발자 도전기',
+            length     = '6:25',
+            album      = '망고의 추억의 앨범',
+            artist     = artist,
+            thumbnail  = thumbnail,
+            collection = collection,
+            playlist   = self.playlist
+        )
+
+    def test_status_code(self):
+        self.assertEqual(clnt.get(f'/music/list/{self.playlist.id}').status_code,200)
+
+        self.assertEqual(clnt.get('/music/list/').status_code,404)
+
+        self.assertEqual(clnt.get('/music/list/a').status_code,404)
+
+    def test_payload_check(self):
+        playlist = Playlist.objects.filter(id=self.playlist.id).prefetch_related('media_set')
+
+        self.assertEqual(
+            clnt.get(f'/music/list/{self.playlist.id}').json(),
+            {'list_meta':{
+                'list_name':'haha',
+                'list_desc':'this is entity for test!',
+                'list_artist':'춤추는망고',
+                'list_year':'3030',
+                'list_thumb':'github.com/ensia96',
+                'list_type':'싱글'
+            },'elements':[{
+                'item_id':self.media.id,
+                'item_thumb':'github.com/ensia96',
+                'item_name':'슈퍼망고의 개발자 도전기',
+                'item_artist':'춤추는망고',
+                'item_album':'망고의 추억의 앨범',
+                'item_length':'6:25'
+            }]})
+

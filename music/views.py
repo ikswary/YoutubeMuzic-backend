@@ -103,3 +103,43 @@ class MainView(View):
 
         return JsonResponse(payload, status=200)
 
+
+class ListView(View):
+    def get(self,request,list_id):
+        playlist = Playlist.objects.filter(id=list_id).prefetch_related('media_set')
+
+        if not playlist :
+            return HttpResponse(status=404)
+
+        return JsonResponse({
+            'list_meta':playlist.annotate(
+                list_name   = F('name'),
+                list_desc   = F('description'),
+                list_artist = F('artist'),
+                list_year   = F('year'),
+                list_thumb  = F('thumbnail_id__url'),
+                list_type   = F('type_id__name')
+            ).values(
+                'list_name',
+                'list_desc',
+                'list_artist',
+                'list_year',
+                'list_thumb',
+                'list_type'
+            ).first(),
+            'elements':list(playlist.annotate(
+                item_id     = F('media__id'),
+                item_thumb  = F('media__thumbnail_id__url'),
+                item_name   = F('media__name'),
+                item_artist = F('media__artist_id__name'),
+                item_album  = F('media__album'),
+                item_length = F('media__length')
+            ).values(
+                'item_id',
+                'item_thumb',
+                'item_name',
+                'item_artist',
+                'item_album',
+                'item_length'))},
+            status=200)
+
