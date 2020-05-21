@@ -114,3 +114,23 @@ class RecentPlaylistView(View):
 
         except KeyError:
             return HttpResponse(status=400)
+
+class LikeMusicView(View):
+    @login_required
+    def get(self, request, user):
+        user = User.objects.prefetch_related('evaluation_set__media').get(id=user.id)
+        liked_medias = user.evaluation_set.filter(like=True).select_related(
+            'media__thumbnail', 'media__artist')
+
+        response = [
+            {
+                'item_id': liked_media.media.id,
+                'item_thumb': liked_media.media.thumbnail.url,
+                'item_name': liked_media.media.name,
+                'item_artist': liked_media.media.artist.name,
+                'item_album': liked_media.media.album,
+                'item_length': liked_media.media.length
+            }
+            for liked_media in liked_medias]
+
+        return JsonResponse({'contents': response}, status=200)

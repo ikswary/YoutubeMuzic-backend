@@ -152,3 +152,22 @@ class RecentViewTest(TestCase):
         response = client.post('/user/recent/playlist', data=data, content_type='application/json', **header)
 
         self.assertEqual(response.status_code, 404)
+
+class LikeMusicView(TestCase):
+    def like_music_view_get_success(self):
+        client = Client()
+
+        header = {'HTTP_authorization': self.jwt_token}
+        response = client.get('/user/like/media', **header)
+
+        self.assertEqual(response.status_code, 200)
+
+    def like_music_view_get_login_failure(self):
+        client = Client()
+
+        client = Client()
+
+        header = {'HTTP_authorization': 'dsfdsf'}
+        response = client.get('/user/like/media', **header)
+
+        self.assertEqual(response.status_code, 400)
