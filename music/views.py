@@ -143,3 +143,17 @@ class ListView(View):
                 'item_length'))},
             status=200)
 
+
+class HotListView(View):
+    def get(self,request):
+        return JsonResponse({
+            'element':list(
+                Hotlist.objects.annotate(
+                    thumb = F('thumbnail_id__url')
+                ).values(
+                    'title',
+                    'thumb',
+                    'artist',
+                    'views',
+                ))},status=200)
+
