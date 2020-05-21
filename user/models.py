@@ -46,6 +46,7 @@ class Evaluation(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     media = models.ForeignKey(Media, on_delete=models.PROTECT)
     like_unlike = models.BooleanField()
+    like = models.BooleanField(null=True)
 
     class Meta:
         db_table = 'evaluations'
