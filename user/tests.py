@@ -171,3 +171,63 @@ class LikeMusicView(TestCase):
         response = client.get('/user/like/media', **header)
 
         self.assertEqual(response.status_code, 400)
+
+
+
+class EvaluationViewTest(TestCase):
+    def test_like_post_success(self):
+        client = Client()
+        data = {
+            "media_id": "5",
+            "like": "True"
+        }
+        header = {'HTTP_authorization': jwt_token}
+        response = client.post('/user/like', data=data, content_type='application/json', **header)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_like_post_Key_Error(self):
+        client = Client()
+        data = {
+            "media": "5",
+            "like": "True"
+        }
+        header = {'HTTP_authorization': jwt_token}
+        response = client.post('/user/like', data=data, content_type='application/json', **header)
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_like_post_Json_Error(self):
+        client = Client()
+        data = {
+            "media_id": "5",
+            "like": "True"
+        }
+        header = {'HTTP_authorization': jwt_token}
+        response = client.post('/user/like', data=data, **header)
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_like_get_success(self):
+        client = Client()
+
+        header = {'HTTP_authorization': jwt_token}
+        response = client.get('/user/like?media_id=5', **header)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_like_get_key_error(self):
+        client = Client()
+
+        header = {'HTTP_authorization': jwt_token}
+        response = client.get('/user/like?media=5', **header)
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_like_get_does_not_exist(self):
+        client = Client()
+
+        header = {'HTTP_authorization': jwt_token}
+        response = client.get('/user/like?media_id=3245820397', **header)
+
+        self.assertEqual(response.status_code, 404)
