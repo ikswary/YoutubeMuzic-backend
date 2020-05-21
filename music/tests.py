@@ -186,3 +186,11 @@ class ListViewTest(TestCase):
                 'item_length':'6:25'
             }]})
 
+
+class HotListViewTest(TestCase):
+    def test_transfer_check(self):
+        self.assertEqual(clnt.get('/music/hot').status_code,200)
+
+    def test_payload_length_check(self):
+        self.assertEqual(len(clnt.get('/music/hot').json()['element']),20)
+
