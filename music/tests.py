@@ -14,6 +14,15 @@ from .models          import (
     Hotlist
 )
 
+import jwt
+
+from YoutubeMuzic.settings import (
+    SECRET_KEY,
+    ALGORITHM
+)
+
+from user.models      import User
+
 clnt = Client()
 
 
@@ -74,9 +83,15 @@ class StreamViewTest(TestCase):
 
 class MainViewTest(TestCase):
     BASIC_COLLECTION_IDS = [1, 7, 13]
+    COLLECTION_FOR_USER  = [1, 6, 2]
     FIRST_PAGINATION_IDS = clnt.get('/music/main').json()['range_list'][:3]
     FIRST_PAGINATION_URL = '/music/main?collection_id={}&collection_id={}&collection_id={}'.format(
         *FIRST_PAGINATION_IDS)
+
+    def setUp(self):
+        self.user = User.objects.create(
+            google_id = 'mango'
+        )
 
     def test_first_req_contents(self):
         self.assertEqual(clnt.get('/music/main').json()['contents'],[{
@@ -95,6 +110,27 @@ class MainViewTest(TestCase):
                     'list_type',
                     'list_artist'))
         } for i in self.BASIC_COLLECTION_IDS])
+
+    def test_first_req_contents_for_user(self):
+        token   = jwt.encode({'id':self.user.id}, SECRET_KEY, algorithm=ALGORITHM)
+        res     = clnt.get('/music/main',**{'HTTP_AUTHORIZATION':token})
+
+        self.assertEqual(res.json()['contents'],[{
+            'collection':Collection.objects.filter(id=i).values('name').first()['name'],
+            'elements':list(
+                Collection.objects.prefetch_related('playlist_set').filter(id=i).annotate(
+                    list_id     = F('playlist__id'),
+                    list_name   = F('playlist__name'),
+                    list_thumb  = F('playlist__thumbnail_id__url'),
+                    list_type   = F('playlist__type_id__name'),
+                    list_artist = F('playlist__artist')
+                ).values(
+                    'list_id',
+                    'list_name',
+                    'list_thumb',
+                    'list_type',
+                    'list_artist'))
+        } for i in self.COLLECTION_FOR_USER])
 
     def test_first_req_infra_elements(self):
         res = clnt.get('/music/main')

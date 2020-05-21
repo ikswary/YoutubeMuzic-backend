@@ -8,6 +8,8 @@ from django.shortcuts import get_object_or_404
 from django.db.models import F
 from pydub            import AudioSegment
 
+from user.utils       import user_check
+
 from .models          import (
     Collection,
     Playlist,
@@ -62,12 +64,16 @@ class StreamView(View):
 
 class MainView(View):
     BASIC_COLLECTION_IDS = [1, 7, 13]
+    COLLECTION_FOR_USER  = [1, 6, 2]
     VARIABLE_COLLECTIONS = [3 ,4, 8, 10, 12, 15]
 
+    @user_check
     def get(self, request):
         range_list = request.GET.getlist('collection_id')
         if not range_list:
             range_list = self.BASIC_COLLECTION_IDS
+            if request.user:
+                range_list = self.COLLECTION_FOR_USER
 
         collection = Collection.objects.prefetch_related('playlist_set')
 
