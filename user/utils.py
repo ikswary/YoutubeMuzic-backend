@@ -23,3 +23,17 @@ def login_required(func):
         except jwt.exceptions.DecodeError:
             return HttpResponse(status=400)
     return login_wrapper
+
+
+def user_check(func):
+    def check_wrapper(self, request, *args, **kwargs):
+        request.user = None
+
+        if 'Authorization' in request.headers:
+            token        = request.headers['Authorization']
+            user_id      = jwt.decode(token, SECRET_KEY, algorithm=ALGORITHM)['id']
+            request.user = User.objects.get(id=user_id)
+
+        return func(self, request)
+
+    return check_wrapper
