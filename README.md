@@ -9,7 +9,7 @@
 ## 데모 영상
 
 <a href="https://youtu.be/5c2VEhlTCJc">
-<img src="./src/img/youtubeMusic.png">
+<img src="/wecode-bootcamp-korea/YoutubeMuzic-frontend/raw/master/src/img/youtubeMusic.png">
 </a>
 
 <br>
