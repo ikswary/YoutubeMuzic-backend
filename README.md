@@ -1,4 +1,4 @@
-# YoutubeMusic | Back-End
+# YoutubeMusic ( 클론프로젝트 / Back-End )
 
 <br>
 
@@ -8,8 +8,8 @@
 
 ## 데모 영상
 
-<a href="https://youtu.be/5c2VEhlTCJc">
-<img src="/wecode-bootcamp-korea/YoutubeMuzic-frontend/raw/master/src/img/youtubeMusic.png">
+<a href="https://youtu.be/5c2VEhlTCJc"> 
+<img width="1440" src="https://user-images.githubusercontent.com/59986267/83350539-bae18900-a377-11ea-87f9-7eb7f8e81b75.png">
 </a>
 
 <br>
