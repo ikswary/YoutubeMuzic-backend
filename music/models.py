@@ -1,7 +1,5 @@
 from django.db import models
 
-
-
 class Collection(models.Model):
     name      = models.CharField(max_length=100)
     thumbnail = models.ForeignKey('Thumbnail', on_delete=models.PROTECT)
@@ -13,8 +11,8 @@ class Collection(models.Model):
 
 class Playlist(models.Model):
     name        = models.CharField(max_length=100)
-    description = models.CharField(max_length=100)
-    year        = models.CharField(max_length=10)
+    description = models.CharField(max_length=1000)
+    year        = models.ShortInteger(max_lengh=4)
     artist      = models.CharField(max_length=100)
     thumbnail   = models.ForeignKey('Thumbnail', on_delete=models.PROTECT)
     type        = models.ForeignKey('Type', on_delete=models.PROTECT, null=True)

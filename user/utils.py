@@ -13,10 +13,12 @@ from .models import User
 def login_required(func):
     def login_wrapper(self, request, *args, **kwargs):
         try:
-            token = request.headers['Authorization']
-            user_id = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)['id']
-            user = get_object_or_404(User, id=user_id)
-            return func(self, request, user)
+            token        = request.headers['Authorization']
+            user_id      = jwt.decode(token, SECRET_KEY, algorithms = ALGORITHM)['id']
+            user         = get_object_or_404(User, id = user_id)
+            request.user = user
+
+            return func(self, request)
 
         except KeyError:
             return HttpResponse(status=400)

@@ -1,4 +1,5 @@
-from django.db import models
+from django.db    import models
+
 from music.models import (
     Playlist,
     Media,
@@ -7,53 +8,35 @@ from music.models import (
 
 
 class User(models.Model):
+    name = ..
+    email = ...
     google_id = models.CharField(max_length=50)
 
     class Meta:
         db_table = 'users'
 
-class ListStorage(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
-    playlist = models.ForeignKey(Playlist, on_delete=models.PROTECT)
+class UserPlayList(models.Model):
+    user        = models.ForeignKey(User, on_delete     = models.PROTECT)
+    playlist    = models.ForeignKey(Playlist, on_delete = models.PROTECT)
+    listened_at = models.DateTimeField(auto_now         = True)
 
     class Meta:
         db_table = 'list_storages'
 
-class MediaStorage(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
-    media = models.ForeignKey(Media, on_delete=models.PROTECT)
+class UserMedia(models.Model):
+    user        = models.ForeignKey(User, on_delete  = models.PROTECT)
+    media       = models.ForeignKey(Media, on_delete = models.PROTECT)
+    listened_at = models.DateTimeField(auto_now      = True)
+    like        = models.BooleanField(null = True)
 
     class Meta:
         db_table = 'media_storages'
 
-class RecentPlaylist(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
-    playlist = models.ForeignKey(Playlist, on_delete=models.PROTECT)
-    listened_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = 'recent_playlists'
-
-class RecentMedia(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
-    media = models.ForeignKey(Media, on_delete=models.PROTECT)
-    listened_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = 'recent_medias'
-
-class Evaluation(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
-    media = models.ForeignKey(Media, on_delete=models.PROTECT)
-    like_unlike = models.BooleanField()
-    like = models.BooleanField(null=True)
-
-    class Meta:
-        db_table = 'evaluations'
-
 class Subscribe(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
-    artist = models.ForeignKey(Artist, on_delete=models.PROTECT)
+    user   = models.ForeignKey(User, on_delete   = models.PROTECT)
+    artist = models.ForeignKey(Artist, on_delete = models.PROTECT)
+    periodic = ...
+    price = ..
 
     class Meta:
         db_table = 'subscribes'
